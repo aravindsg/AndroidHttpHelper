@@ -16,6 +16,8 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 
+/**
+ */
 public class HttpConnector {
 	private static final String TAG = "HTTP_CALL";
 	private static final int RETRY_LIMIT = 3;
@@ -33,6 +35,15 @@ public class HttpConnector {
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
+	/**
+	 * Method performRequest.
+	 * @param context Context
+	 * @param url String
+	 * @param method int
+	 * @param headers HashMap<String,String>
+	 * @param params HashMap<String,String>
+	 * @return String
+	 */
 	public String performRequest(Context context, final String url, final int method, final HashMap<String, String> headers, final HashMap<String, String> params) {
 
 		StringBuilder b = null;
@@ -87,7 +98,7 @@ public class HttpConnector {
 		} catch (Exception e) {
 			Logger.e(TAG + url + " Exception in Http Stack", e.getMessage());
 		} finally {
-			((HttpURLConnection) urlConnection).disconnect();
+			urlConnection.disconnect();
 		}
 
 		Logger.d(TAG + url + " timeTaken ", (System.currentTimeMillis() - startTime) / 1000 + " ");
@@ -97,6 +108,16 @@ public class HttpConnector {
 
 	}
 
+	/**
+	 * Method setupPostParameters.
+	 * @param url String
+	 * @param params HashMap<String,String>
+	 * @param urlConnection HttpURLConnection
+	 * @param i int
+	 * @param postHeaders String
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 */
 	private void setupPostParameters(final String url, final HashMap<String, String> params, HttpURLConnection urlConnection, int i, String postHeaders) throws UnsupportedEncodingException,
 			IOException {
 		urlConnection.setDoOutput(true);
@@ -107,6 +128,15 @@ public class HttpConnector {
 		out.close();
 	}
 
+	/**
+	 * Method readStringResponse.
+	 * @param b StringBuilder
+	 * @param urlConnection HttpURLConnection
+	 * @param destUrl URL
+	 * @param in InputStream
+	 * @return StringBuilder
+	 * @throws IOException
+	 */
 	private StringBuilder readStringResponse(StringBuilder b, HttpURLConnection urlConnection, final URL destUrl, InputStream in) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		if (destUrl.getHost().equals(urlConnection.getURL().getHost())) {
@@ -120,6 +150,12 @@ public class HttpConnector {
 		return b;
 	}
 
+	/**
+	 * Method setupConnectionParameters.
+	 * @param headers HashMap<String,String>
+	 * @param urlConnection HttpURLConnection
+	 * @param i int
+	 */
 	private void setupConnectionParameters(final HashMap<String, String> headers, HttpURLConnection urlConnection, int i) {
 		urlConnection.setConnectTimeout(CONNECTION_TIMEOUT * 1000);
 		urlConnection.setReadTimeout(READ_TIMEOUT[i] * 1000);
@@ -130,6 +166,13 @@ public class HttpConnector {
 		urlConnection.setUseCaches(false);
 	}
 
+	/**
+	 * Method printInput.
+	 * @param url String
+	 * @param i int
+	 * @param params String
+	 * @param headers String
+	 */
 	private void printInput(final String url, int i, String params, String headers) {
 		Logger.d(TAG + url + " parameters:", params);
 		if (!headers.equalsIgnoreCase("")) {
@@ -137,6 +180,11 @@ public class HttpConnector {
 		}
 	}
 
+	/**
+	 * Method setHeaders.
+	 * @param urlConnection URLConnection
+	 * @param headers HashMap<String,String>
+	 */
 	private void setHeaders(URLConnection urlConnection, HashMap<String, String> headers) {
 
 		if (headers == null)
@@ -148,6 +196,12 @@ public class HttpConnector {
 
 	}
 
+	/**
+	 * Method getParametersToPost.
+	 * @param params HashMap<String,String>
+	 * @return String
+	 * @throws UnsupportedEncodingException
+	 */
 	private String getParametersToPost(HashMap<String, String> params) throws UnsupportedEncodingException {
 
 		if (params == null || params.size() == 0)
@@ -160,10 +214,10 @@ public class HttpConnector {
 			if (first)
 				first = false;
 			else
-				result.append("&");
+				result.append('&');
 
 			result.append(URLEncoder.encode(key, "UTF-8"));
-			result.append("=");
+			result.append('=');
 			result.append(URLEncoder.encode(params.get(key), "UTF-8"));
 		}
 
